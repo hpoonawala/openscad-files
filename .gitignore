@@ -1,0 +1,16 @@
+.DS_Store
+Makefile
+anykubic_cobra.ini
+backups/
+boat-vase-mode-30mins-0.2-15m.gcode
+calib/
+example_local_coord.scad
+gridfin/
+gridfinity-rebuilt-openscad-main/
+home/
+office/
+printer_dimensions.csv
+rc_robot/
+schematics_and_manuals/
+test_round_anything.scad
+
