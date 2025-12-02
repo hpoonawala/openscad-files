@@ -1,4 +1,6 @@
 .DS_Store
+**/*.stl
+**/*.png
 Makefile
 anykubic_cobra.ini
 backups/
@@ -10,7 +12,7 @@ gridfinity-rebuilt-openscad-main/
 home/
 office/
 printer_dimensions.csv
-rc_robot/
+activitiybot/
 schematics_and_manuals/
 test_round_anything.scad
 
