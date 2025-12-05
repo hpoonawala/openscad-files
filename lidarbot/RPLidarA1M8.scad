@@ -1,5 +1,5 @@
 
-include <../hp_utils.scad>
+include </Users/hasan/OpenSCAD/hp_utils.scad>
 module rplidar_holeplan(r=1.5){
 	mirrory(){
 		move(x=42,y=20)circle(r);

@@ -2,7 +2,7 @@
 module mount_plate(){
 	lin_ext(mount_thickness)difference(){
 		move(x=-10){
-			apply_fillet(-30/2,plate_width/2,1,90)apply_fillet(30/2,plate_width/2,1)square([30,plate_width],center=true); 
+			apply_fillet(-30/2,tt/2,1,90)apply_fillet(30/2,tt_motor_width/2,1)square([30,tt_motor_width],center=true); 
 		}
  tt_hole_pattern();
 		//move(x=5,y=5)repeat(y=hole_separation)circle(hole_radius); 
@@ -11,7 +11,7 @@ module mount_plate(){
 
 module tt_hole_pattern(){
 	mirrory()move(y=hole_separation/2)circle(hole_radius); 
-	move(x=-21.1)circle(shaft_hole_radius);
+	move(x=-21.1)circle(30);
 }
 
 ///// Code to test hole pattern values

@@ -1,15 +1,15 @@
 // A Chassis for mounting 2 TT motors, a motor driver (On AtomicMOtionBase), a microcontroller (ESP32S3 on AtomS3Lite), and sensors (realsense+RPLidar)
 // Trying to mount the RPi and M5stack AtomicMotionBase
-include <../hp_utils.scad>
+include </Users/hasan/OpenSCAD/hp_utils.scad>
 include <mountplate.scad> // for motors
 include <baseplate.scad>
 include <DRV8833.scad>
-include <atommotionbase.scad>
+include <custom_amb.scad>
 include <steel_caster.scad>
 include <rpiplan.scad>
 include <elegoo_uno_r3.scad>
 include <RPLidarA1M8.scad>
-
+// include <TT_mm_2/motor_mount.scad>
 // include <../../home/bday_bot/two_TT_motor_base.scad>
 
 $fa=1;
@@ -44,7 +44,7 @@ upper_realsense_extend = 15+0;
 caster_X = 48+30;
 upper_caster_extend =5;
 
-// LOWER BOARD to attach motors, RPi, AMB mount
+// LOWER BOARD to attach motors, RPi, cAMB mount
 module lower_board(){
 
 	// motor mount pieces
@@ -53,8 +53,8 @@ module lower_board(){
 		// Motor mount  holes:
 		mirrory()move(x=-10,z = base_height+12,rx=90)lin_ext(mtr_mnt_W*1.2)holepattern(0,hole_radius,20.1,hole_separation);
 	}
-
 		mirrory()move(y=motor_gap/2+0.1,z = base_height)move(rz=180)linear_extrude(height=27,scale=0.5)move(x=-2)square([4,8]);
+
 	// PLATFORM
 	difference(){// 
 
@@ -63,18 +63,18 @@ module lower_board(){
 		lin_ext(base_height)difference(){
 			move(x=(right_add - left_add)/2)rounded_rect(50+left_add+right_add,rpi_L,2); 
 			rounded_rect(mtr_mnt_L-mount_thickness,mtr_mnt_W-mount_thickness,2); 
-			move(x=45)rounded_rect(mtr_mnt_L-mount_thickness,mtr_mnt_W-mount_thickness,2); 
+			move(x=45+5)rounded_rect(mtr_mnt_L-mount_thickness-6,mtr_mnt_W-mount_thickness,2); 
 			move(x=caster_X,rz=90)hole_pattern_caster(); // Caster holes
 			move(x=caster_X,rz=90)rounded_rect(20,20,2);// Hole above caster
 			// moveArduino()elegoo_uno_r3_plan(); // Arduino holes
 			separator_hole_pattern();
-			move(x=-3)hole_pattern_rpi(); // RPi holes
+			move(x=2)hole_pattern_rpi(); // RPi holes
 			// move(x=-32)mirrory()move(y=10)circle(1.67); // potential realsense additional mount holes
 			mirrory()move(x=-30,y=10)polygon([[0,35],[-35,35],[-35,0]]); // cutouts
 			mirrory()move(x=35+30,y=12)polygon([[0,35],[35,35],[35,0]]); // cutouts
 			// motorWireHoleDim = 18;
 			// mirrory()move(x=40,y=15)polygon([[0,0],[0,motorWireHoleDim],[motorWireHoleDim,0]]); // cutouts
-			// move(x=50+25)hole_pattern_AMB(r=1.67);
+			// move(x=50+25)hole_pattern_cAMB(r=1.67);
 		}
 	} 
 
@@ -124,7 +124,7 @@ module upper_board(){
 
 	} 
 
-		lin_ext(base_height+6)
+		lin_ext(base_height+6+10)
 			difference(){separator_hole_pattern(2.75);separator_hole_pattern();
 			}
 
@@ -142,25 +142,37 @@ module upper_board(){
 
 
 // Designed a mount for the AtomicMotionBase that goes above the screw holes for the caster, with a seat to resolve push-pull
-module AMB_mount(){
+module cAMB_mount(){
 	difference(){
 
-			AMB_move = 12;
-		lin_ext(4)difference(){
+		lin_ext(2)difference(){
 
-			left_add = 10-2;
-			right_add = 15;
-			move(x=(right_add - left_add)/2)rounded_rect(40+left_add+right_add,40,2);
+			rounded_rect(40,77,2);
 			{
-				move(x=AMB_move)hole_pattern_AMB(r=1.7);
+				// move(x=cAMB_move)hole_pattern_cAMB(r=1.7);
 				move(rz=90)hole_pattern_caster(); // Caster holes
-				move(rz=90)rounded_rect(20,20,2);// Hole above caster
+				rounded_rect(20,20,2);// Hole above caster
 			}
 		}
 		move(z=1.5)lin_ext(3)move(rz=90) hole_pattern_caster(3.1);
-		move(x=AMB_move,z=2.5)lin_ext(3)rounded_rect(AMB_L+0.2,AMB_W+0.2,3);
+
+		// move(x=cAMB_move,z=2.5)lin_ext(3)rounded_rect(cAMB_L+0.2,cAMB_W+0.2,3);
 
 	}
+	difference(){
+
+		move(z=1.49)lin_ext(3)move(rz=90) hole_pattern_caster(5);
+		move(z=1.4)lin_ext(3.3)move(rz=90) hole_pattern_caster(3.1);
+	}
+	move(z=2)
+		lin_ext(6)
+		difference()
+		{
+			rounded_rect(40,77,2);// Walls of the board holder
+			rounded_rect(30.6,70.6,0.25); // rect hole for board
+			square([40,50],center=true);
+		}
+	lin_ext(2+6-1.5)mirror4()move(x=15,y=35)circle(3);
 }
 
 module rpi(){
@@ -169,6 +181,46 @@ module rpi(){
 }
 
 
+module battMount(){
+	wall_thick_offset = mount_thickness+0.01;
+	rib_offset=2;
+	difference(){ 
+		#mirrory()move(rx=90)move(z=motor_gap/2+0.1-wall_thick_offset)lin_ext(mount_thickness)polygon([[rib_offset,3],[15,3],[15,30],[rib_offset,30],[rib_offset,0]]);
+		// Motor mount  holes:
+		mirrory()move(x=-10,z = base_height+12,rx=90)lin_ext(mtr_mnt_W*1.2)holepattern(0,hole_radius,20.1,hole_separation);
+	}
+	move(z=3)mirrory()move(x=15,y=motor_gap/2+0.1)move(rz=180)linear_extrude(height=27+0,scale=1.5)move(x=-2)square([2,5]);
+	move(x=rib_offset,z=30)lin_ext(base_height){
+		difference(){
+			union(){
+				mirror4()square([25,motor_gap/2]);
+				// #rounded_rect(100,motor_gap/2,2);
+			}
+			mirror4()move(x=20,y=12)circle(1.67);
+		}
+
+	}
+}
+
+
+
+module battery_tray(){
+
+	difference(){
+		lin_ext(1)difference(){
+			rounded_rect(95,45,2);
+			mirrorx()move(x=35)
+				rounded_rect(15,40,2);
+			rounded_rect(25,40,2);
+			mirror4()move(x=20,y=12)circle(1.67);
+		}
+		mirror4()move(x=20,y=12)move(z=0.5)linear_extrude(height=0.51,scale=2)circle(1.67);
+	}
+	move(z=1)difference(){
+		lin_ext(2)rounded_rect(95,45,2);
+		move(z=-0.005)linear_extrude(height=2.01,scale=[1.02,1.04])rounded_rect(93,43,2);
+	}
+}
 
 // Assembly
 assembly = true;
@@ -180,22 +232,27 @@ if (assembly){ // ASSEMBLE
 	}
 	// color("orange")move(y=-25,rz=90)move(x=-mtr_mnt_L/2,y=-56/2)move(z=2)rpi();
 	move(rx=180)lower_board();
-	move(x=caster_X,z=0)AMB_mount();	
+	move(x=caster_X,z=0)cAMB_mount();	
 	// rsExtend();
+	move(z=0,rx=180)battMount();
+	move(z=-30)battery_tray();
 }
 else{         // LAYOUT
-	move(y=0)upper_board();
-	move(y=100)lower_board();
-	move(x=caster_X)AMB_mount();	
-	move(x=-50)rsExtend();
+			  move(y=0)upper_board();
+			  move(y=100)lower_board();
+	move(x=caster_X*0)cAMB_mount();	
+	move(z=33,x=100,y=00,rx=180)battMount();
 }
 
+// move(x=-50)rsExtend();
 
 // Atomic Motion Base model for viz
-// move(y=-100) AMB_board();
+// move(y=-100) cAMB_board();
 //
 
 // Made spacers for the optical sensor mount
 // lin_ext(6)
 // 	difference(){separator_hole_pattern(2.75);separator_hole_pattern();
 // 	}
+//
+//
